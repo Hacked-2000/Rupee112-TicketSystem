@@ -10,16 +10,18 @@ import store from '../Store/store';
 import Loading from '../Components/loading';
 import Authenticated from '../Guards/Auntications';
 import Guest from '../Guards/guests';
+import { combineSlices } from '@reduxjs/toolkit';
 
 const Login = lazy(() => import('../Pages/login'));
 const Dashboard = lazy(() => import('../Pages/Dashboard'));
-const UMS = lazy(() => import('../Components/ums'));
-const TMS = lazy(() => import('../Components/tms'));
+const UMS = lazy(() => import('../Components/UMS/ums'));
+const TMS = lazy(() => import('../Components/TMS/tms'));
 const Reports = lazy(() => import('../Components/reports'));
 const Profile = lazy(() => import('../Components/profile'));
 const Sidebar = lazy(() => import('../Components/Sidebar/sidebar'));
 const TopBar = lazy(() => import('../Components/topBar'));
-const openTicket = lazy(() => import('../Components/openTicket'));
+const openTicket = lazy(() => import('../Components/TMS/openTicket'));
+const createTicket = lazy(() => import('../Components/TMS/createTicket'));
 
 const drawerWidth = 240;
 
@@ -92,6 +94,12 @@ const routes = [
     path: '/openTicket',
     Guard: Authenticated,
     component: openTicket,
+    exact: true,
+  },
+  {
+    path: '/createTicket',
+    Guard: Authenticated,
+    component: createTicket,
     exact: true,
   },
 ];

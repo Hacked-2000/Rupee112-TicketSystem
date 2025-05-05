@@ -7,4 +7,5 @@ export const apiUrls={
     UpdateUser: '/api/v1//users',
     DeleteUser: '/api/v1/users',
     MasterRole: '/api/v1/roles',
+    CreateTicket: '/api/v1/tickets',
 };
