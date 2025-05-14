@@ -34,6 +34,10 @@ const TopBar = ({ sidebarOpen, setSidebarOpen, handleDrawerToggle }) => {
   const themeMode = useSelector((state) => state.theme.mode);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  // Get role permissions from master role API data
+  const rolePermissions = user?.master?.data || [];
+  const currentRole = user?.protected?.user?.role_id;
+  
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -52,14 +56,21 @@ const TopBar = ({ sidebarOpen, setSidebarOpen, handleDrawerToggle }) => {
     dispatch(toggleTheme());
   };
 
+  const getRoleName = () => {
+    let role=rolePermissions.filter((item)=>{
+      return item?.id==currentRole
+    })
+    return role[0]?.name
+  };
+
   return (
     <AppBar
       position="fixed"
       sx={{
         zIndex: (theme) => theme.zIndex.drawer + 1,
         background: theme.palette.mode === 'dark' 
-          ? 'linear-gradient(45deg, #121212 30%, #1e1e1e 90%)' 
-          : 'linear-gradient(45deg, #1976d2 30%, #2196f3 90%)',
+          ? 'linear-gradient(45deg, rgb(23, 23, 23) 30%,rgb(54, 54, 54) 90%)' 
+          : 'linear-gradient(45deg,rgb(23, 23, 23) 30%, rgb(54, 54, 54) 90%)',
         boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .1)',
       }}
     >
@@ -78,15 +89,15 @@ const TopBar = ({ sidebarOpen, setSidebarOpen, handleDrawerToggle }) => {
           aria-label="open drawer"
           edge="start"
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          sx={{ mr: 2, display: { xs: 'none', sm: 'block' } }}
+          sx={{ mr: 2, display: { xs: 'none', sm: 'block' } , color: '#fff'}}
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1,color: '#fff' }}>
           Ticket System
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton color="inherit" onClick={handleThemeToggle}>
+          <IconButton color="inherit" onClick={handleThemeToggle} sx={{ color: '#fff' }}>
             {themeMode === 'dark' ? (
               <motion.div whileHover={{ rotate: 20 }}>
                 <LightModeIcon />
@@ -97,9 +108,9 @@ const TopBar = ({ sidebarOpen, setSidebarOpen, handleDrawerToggle }) => {
               </motion.div>
             )}
           </IconButton>
-          <IconButton color="inherit">
+          <IconButton color="inherit" sx={{ color: '#fff' }}>
             <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
+              <NotificationsIcon sx={{ color: '#fff' }}/>
             </Badge>
           </IconButton>
           <IconButton
@@ -117,7 +128,7 @@ const TopBar = ({ sidebarOpen, setSidebarOpen, handleDrawerToggle }) => {
                 bgcolor: theme.palette.secondary.main,
               }}
             >
-              {user?.name?.charAt(0) || 'U'}
+              {getRoleName().charAt(0) || 'U'}
             </Avatar>
           </IconButton>
         </Box>

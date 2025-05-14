@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers, createUser, updateUser, deleteUser } from "../Store/Reducers/umsSlice";
+import { fetchUsers, createUser, updateUser, deleteUser } from "../../Store/Reducers/umsSlice";
 import {
   Box,
   Typography,

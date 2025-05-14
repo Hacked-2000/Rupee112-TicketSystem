@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -186,6 +186,12 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSubmit(e);
+    }
+  };
   
   return (
     <>
@@ -310,6 +316,7 @@ const Login = () => {
                     autoFocus
                     value={user_email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onKeyDown={handleKeyPress}
                     sx={{
                       mb: 2,
                       '& .MuiInputLabel-root': {
@@ -337,6 +344,7 @@ const Login = () => {
                     autoComplete="current-password"
                     value={user_password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={handleKeyPress}
                     sx={{
                       mb: 2,
                       '& .MuiInputLabel-root': {
@@ -388,7 +396,6 @@ const Login = () => {
                       scale: 1.02,
                     }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={handleSubmit}
                     disabled={loading}
                   >
                     {loading ? (

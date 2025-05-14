@@ -1,44 +1,114 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import makeApiRequest from '../../Utils/makeAPIRequest';
-import { apiUrls } from '../../Utils/APIEndPoints';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import makeApiRequest from "../../Utils/makeAPIRequest";
+import { apiUrls } from "../../Utils/APIEndPoints";
+import axios from "axios";
+
+export const addTicketReply = createAsyncThunk(
+  "tms/addTicketReply",
+)
 
 export const createTicket = createAsyncThunk(
-  'ticket/createTicket',
-  async (ticketData, { getState, dispatch }) => {
+  "tms/createTicket",
+  async (formData, { getState, dispatch, rejectWithValue }) => {
     const state = getState();
     const token = state.auth?.user?.data?.token;
-    const userId = state.auth?.user?.data?.user?.id;
-    
-    const payload = {
-      ...ticketData,
-      updated_by: userId
-    };
+
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-type": "multipart/form-data",
+        },
+      };
+
+      const response = await axios.post(apiUrls.CreateTicket, formData, config);
+
+      if (!response.data) {
+        throw new Error("No data received from server");
+      }
+
+      if (response.data.status === "failure") {
+        const errorMsg = response.data.message || "Ticket creation failed";
+        throw new Error(errorMsg);
+      }
+
+      return response.data?.ticket;
+    } catch (error) {
+      // Handle different error scenarios
+      console.log(error);
+      let errorMessage = "Failed to create ticket";
+
+      if (error.response) {
+        // Server responded with error status
+        errorMessage =
+          error.response.data?.message ||
+          error.response.data?.errors?.[0]?.msg ||
+          errorMessage;
+      } else if (error.request) {
+        // Request was made but no response received
+        errorMessage = "No response from server";
+      }
+
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const fetchTickets = createAsyncThunk(
+  "tms/fetchTickets",
+  async (
+    { page = 1, limit = 50, startDate, endDate },
+    { getState, dispatch }
+  ) => {
+    const state = getState();
+    const token = state.auth?.user?.data?.token;
+
+    const params = new URLSearchParams({
+      page,
+      limit,
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
+    });
 
     const options = {
-      method: 'POST',
-      data: payload,
+      method: "GET",
     };
-    
+
     const response = await makeApiRequest(
-      apiUrls.CreateTicket,
+      `${apiUrls.TicketList}?${params.toString()}`,
       options,
-      'application/json',
+      "application/json",
       dispatch,
       token,
       true
     );
-    return response?.data?.ticket;
+    // console.log(response)
+    // return response?.data;
+    return {
+      tickets: response.data,
+      pagination: response.pagination,
+    };
   }
 );
 
-const ticketSlice = createSlice({
-  name: 'ticket',
+const tmsSlice = createSlice({
+  name: "tms",
   initialState: {
     tickets: [],
     loading: false,
     error: null,
+    pagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalItems: 0,
+      limit: 25,
+    },
   },
-  reducers: {},
+  reducers: {
+    setCurrentPage: (state, action) => {
+      state.pagination.currentPage = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createTicket.pending, (state) => {
@@ -52,8 +122,27 @@ const ticketSlice = createSlice({
       .addCase(createTicket.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      .addCase(fetchTickets.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTickets.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tickets = action.payload.tickets;
+        state.pagination = {
+          currentPage: action.payload.current_page || 1,
+          totalPages: action.payload.total_pages || 1,
+          totalItems: action.payload.total_items || 0,
+          limit: action.payload.limit || 50,
+        };
+      })
+      .addCase(fetchTickets.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });
 
-export default ticketSlice.reducer;
+export const { setCurrentPage } = tmsSlice.actions;
+export default tmsSlice.reducer;

@@ -12,8 +12,8 @@ export default defineConfig({
   server: {
     proxy: {
       // Intercept API calls to `/api` and forward them to the actual backend
-      '/api/v1': {
-        target:"http://192.168.3.193:3001/",
+      '/api': {
+        target:"http://192.168.2.186:3001/",
         changeOrigin: true,
         secure: false
         

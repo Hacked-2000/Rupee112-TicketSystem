@@ -6,6 +6,7 @@ const baseurl = import.meta.env.VITE_APP_REACT_APP_BASE_URL;
 const axiosInstance = axios.create({
     
     withCredentials: true,
+   
   });
   
 
@@ -25,15 +26,14 @@ const makeApiRequest = async (url, options, header, dispatch,token,globalloader)
   const localData = token;
   const { method, data } = options;
   const lowerCaseMethod = method.toLowerCase();
-
+  console.log(header)
   const headers = {
-    "Content-Type": header ? header : "application/json",
+    "Content-Type":header,
     Authorization: localData && `Bearer ${localData}`,
   };
 
   const finalUrl = url;
-  console.log(finalUrl)
-console.log(header);
+
 
   try {
     if(globalloader){
@@ -46,6 +46,7 @@ console.log(header);
       ...(data && { data }),
       headers,
     });
+    // console.log(response)
     return response.data;
   } catch (error) {
     

@@ -15,6 +15,7 @@ import {
   Assessment as ReportIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import TMS from '../Components/TMS/tms';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -69,7 +70,7 @@ const Dashboard = () => {
   return (
     <>
     <ToastContainer position="top-right" autoClose={1000} />
-    <Box sx={{ flexGrow: 1 }}>
+    {/* <Box sx={{ flexGrow: 1 }}>
       <Typography variant="h4" gutterBottom>
         Welcome back, {user?.name}!
       </Typography>
@@ -119,7 +120,8 @@ const Dashboard = () => {
           </Typography>
         </Paper>
       </motion.div>
-    </Box>
+    </Box> */}
+    <TMS />
     </>
   );
 };

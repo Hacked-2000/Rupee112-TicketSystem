@@ -1,3 +1,5 @@
+import TicketReply from "../Components/TMS/openTicket";
+
 export const apiUrls={
 
     Login:'/api/v1/login',
@@ -7,5 +9,7 @@ export const apiUrls={
     UpdateUser: '/api/v1//users',
     DeleteUser: '/api/v1/users',
     MasterRole: '/api/v1/roles',
-    CreateTicket: '/api/v1/tickets',
+    CreateTicket: '/api/v2/tickets',
+    TicketList: '/api/v2/tickets',
+    TicketReply: '/v2/tickets/${ticket_id}/replies',
 };

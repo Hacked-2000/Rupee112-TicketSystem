@@ -243,7 +243,7 @@ const Sidebar = ({ mobileOpen, sidebarOpen, handleDrawerToggle }) => {
       to: '/profile',
       icon: <ProfileIcon />,
       text: 'Profile',
-      roles: [1, 2, 3, 4, 5] // All roles have access to profile
+      roles: [2, 3] 
     }
   ];
 
@@ -262,20 +262,13 @@ const Sidebar = ({ mobileOpen, sidebarOpen, handleDrawerToggle }) => {
   );
 
   const getUserRoleName = () => {
-    const role = rolePermissions.find(r => r.role_id === currentRole);
-    return role?.role_name || 'User';
+    let role=rolePermissions.filter((item)=>{
+      return item?.id==currentRole
+    })
+    return role[0]?.name
   };
 
-  const getUserRoleDescription = () => {
-    switch(currentRole) {
-      case 3: return 'Administrator';
-      case 2: return 'Manager';
-      case 1: return 'Support';
-      case 4: return 'Agent';
-      case 5: return 'Client';
-      default: return 'User';
-    }
-  };
+ 
 
   const drawer = (
     <Box sx={{ 
@@ -294,7 +287,7 @@ const Sidebar = ({ mobileOpen, sidebarOpen, handleDrawerToggle }) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Tooltip title={getUserRoleDescription()} placement="right">
+          <Tooltip title={getUserRoleName()} placement="right">
             <Avatar 
               sx={{ 
                 width: 64, 

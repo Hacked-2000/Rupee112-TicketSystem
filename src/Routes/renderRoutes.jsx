@@ -1,16 +1,16 @@
 import React, { Fragment, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+// import { ThemeProvider, createTheme } from '@mui/material/styles';
+// import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { Provider, useSelector } from 'react-redux';
-import store from '../Store/store';
+// import store from '../Store/store';
 import Loading from '../Components/loading';
 import Authenticated from '../Guards/Auntications';
 import Guest from '../Guards/guests';
-import { combineSlices } from '@reduxjs/toolkit';
+// import { combineSlices } from '@reduxjs/toolkit';
 
 const Login = lazy(() => import('../Pages/login'));
 const Dashboard = lazy(() => import('../Pages/Dashboard'));

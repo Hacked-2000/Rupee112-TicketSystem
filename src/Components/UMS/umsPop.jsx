@@ -1,5 +1,5 @@
 // src/Components/umsPop.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -10,63 +10,72 @@ import {
   MenuItem,
   Typography,
   Box,
-} from '@mui/material';
-import { useSelector } from 'react-redux';
+} from "@mui/material";
+import { useSelector } from "react-redux";
 
 const umsPop = ({ open, onClose, mode, userData, usersList, onSubmit }) => {
-    const {user} = useSelector((state) => state.auth);
-    const masterRole = user?.master?.data || [];
+  const { user } = useSelector((state) => state.auth);
+  const masterRole = user?.master?.data || [];
+  const [passwordError, setPasswordError] = useState("");
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role_id: '',
-    reporting: '',
+    name: "",
+    email: "",
+    password: "",
+    role_id: "",
+    reporting: "",
     is_active: 1,
-    lms_user_id: '',
-    created_by: user?.id || '',
+    lms_user_id: "",
+    created_by: user?.id || "",
   });
 
-//   console.log(masterRole);
-  
-//   const availableRoles = Array.isArray(masterRole) ? masterRole : [];
+  //   console.log(masterRole);
+
+  //   const availableRoles = Array.isArray(masterRole) ? masterRole : [];
 
   useEffect(() => {
-    if (mode === 'edit' && userData) {
+    if (mode === "edit" && userData) {
       setFormData({
         name: userData.name,
         email: userData.email,
         role_id: userData.role_id,
         reporting: userData.reporting,
         is_active: userData.is_active,
-        lms_user_id: userData.lms_user_id || '',
-        created_by: userData.created_by ,
+        lms_user_id: userData.lms_user_id || "",
+        created_by: userData.created_by,
       });
-    } else if (mode === 'add') {
+    } else if (mode === "add") {
       setFormData({
-        name: '',
-        email: '',
-        password: '',
-        role_id: '',
-        reporting: '',
+        name: "",
+        email: "",
+        password: "",
+        role_id: "",
+        reporting: "",
         is_active: 1,
-        lms_user_id: '',
-        created_by: user?.id || '',
+        lms_user_id: "",
+        created_by: user?.id || "",
       });
     }
   }, [mode, userData, user?.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "password") {
+      if (value.length < 8) {
+        setPasswordError("Password must be at least 8 characters");
+      } else {
+        setPasswordError("");
+      }
+    }
   };
 
   const handleSubmit = () => {
     let submitData = { ...formData };
 
-    if (mode === 'add') {
+    if (mode === "add") {
       submitData.created_by = user?.id;
-    } else if (mode === 'edit') {
+    } else if (mode === "edit") {
       // Remove email and password before submitting
       const { email, password, ...rest } = formData;
       submitData = rest;
@@ -77,21 +86,24 @@ const umsPop = ({ open, onClose, mode, userData, usersList, onSubmit }) => {
   };
 
   const getRoleName = (roleId) => {
-    const role = masterRole.find(r => r.id === roleId);
-    return role ? role.name : 'User';
+    const role = masterRole.find((r) => r.id === roleId);
+    return role ? role.name : "User";
   };
-
 
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>
-        {mode === 'add' ? 'Add User' : mode === 'edit' ? 'Edit User' : 'Delete User'}
+        {mode === "add"
+          ? "Add User"
+          : mode === "edit"
+          ? "Edit User"
+          : "Delete User"}
       </DialogTitle>
       <DialogContent>
-        {mode === 'delete' ? (
+        {mode === "delete" ? (
           <Typography>Delete user {userData?.name}?</Typography>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
             <TextField
               label="Name"
               name="name"
@@ -115,13 +127,15 @@ const umsPop = ({ open, onClose, mode, userData, usersList, onSubmit }) => {
               onChange={handleChange}
               fullWidth
             />
-            {mode === 'add' && (
+            {mode === "add" && (
               <TextField
                 label="Password"
                 name="password"
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
+                error={!!passwordError}
+                helperText={passwordError}
                 fullWidth
                 required
               />
@@ -135,12 +149,11 @@ const umsPop = ({ open, onClose, mode, userData, usersList, onSubmit }) => {
               fullWidth
               required
             >
-                            {masterRole.map((role) => (
+              {masterRole.map((role) => (
                 <MenuItem key={role.id} value={role.id}>
                   {role.name}
                 </MenuItem>
               ))}
-
             </TextField>
             <TextField
               select
@@ -158,7 +171,7 @@ const umsPop = ({ open, onClose, mode, userData, usersList, onSubmit }) => {
                 </MenuItem>
               ))}
             </TextField>
-            {mode === 'edit' && (
+            {mode === "edit" && (
               <TextField
                 select
                 label="Status"
@@ -176,12 +189,18 @@ const umsPop = ({ open, onClose, mode, userData, usersList, onSubmit }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button 
-          onClick={handleSubmit} 
-          color={mode === 'delete' ? 'error' : 'primary'}
-          disabled={mode !== 'delete' && (!formData.name || !formData.email || !formData.role_id)}
+        <Button
+          onClick={handleSubmit}
+          color={mode === "delete" ? "error" : "primary"}
+          disabled={
+            mode !== "delete" &&
+            (!formData.name ||
+              !formData.email ||
+              !formData.role_id ||
+              (mode === "add" && (!formData.password || formData.password.length < 8))) // Add password length check
+          }
         >
-          {mode === 'delete' ? 'Confirm Delete' : 'Save'}
+          {mode === "delete" ? "Confirm Delete" : "Save"}
         </Button>
       </DialogActions>
     </Dialog>
