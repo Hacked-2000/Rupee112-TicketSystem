@@ -8,10 +8,6 @@ const axiosInstance = axios.create({
     withCredentials: true,
    
   });
-  
-
-
-
 
 export const debounce = (func, wait) => {
   let timeout;

@@ -22,6 +22,7 @@ const Sidebar = lazy(() => import('../Components/Sidebar/sidebar'));
 const TopBar = lazy(() => import('../Components/topBar'));
 const openTicket = lazy(() => import('../Components/TMS/openTicket'));
 const createTicket = lazy(() => import('../Components/TMS/createTicket'));
+const ForgotPassword = lazy(() => import('../Components/forgotPassword'));
 
 const drawerWidth = 240;
 
@@ -91,7 +92,7 @@ const routes = [
     exact: true,
   },
   {
-    path: '/openTicket',
+    path: '/openTicket/:ticket_id',
     Guard: Authenticated,
     component: openTicket,
     exact: true,
@@ -102,6 +103,12 @@ const routes = [
     component: createTicket,
     exact: true,
   },
+  {
+    path: '/forgotPassword',
+    Guard: Guest,
+    component: ForgotPassword,
+    exact: true,
+  }
 ];
 
 function RenderRoute() {
@@ -141,6 +148,7 @@ function RenderRoute() {
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/login" element={<Login />} />
+           <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Suspense>

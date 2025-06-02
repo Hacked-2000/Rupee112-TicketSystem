@@ -11,5 +11,6 @@ export const apiUrls={
     MasterRole: '/api/v1/roles',
     CreateTicket: '/api/v2/tickets',
     TicketList: '/api/v2/tickets',
-    TicketReply: '/v2/tickets/${ticket_id}/replies',
+    TicketReply: '/api/v2/tickets',
+    TicketStatus: '/api/v2/tickets/status',
 };

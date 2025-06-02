@@ -7,7 +7,7 @@ import {
   loginFailure,
 } from "../Store/Reducers/loginSlice";
 import { motion } from "framer-motion";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer, toast } from "react-fox-toast";
 import "react-toastify/dist/ReactToastify.css";
 import { CircularProgress, IconButton } from "@mui/material";
 import {
@@ -33,40 +33,41 @@ import makeApiRequest from "../Utils/makeAPIRequest";
 const getDesignTokens = (mode) => ({
   palette: {
     mode,
-    ...(mode === 'light'
+    ...(mode === "light"
       ? {
           // Light mode palette
           primary: {
-            main: '#1976d2',
-            dark: '#0d47a1',
+            main: "#1976d2",
+            dark: "#0d47a1",
           },
           secondary: {
-            main: '#212121',
+            main: "#212121",
           },
           background: {
-            default: 'linear-gradient(135deg,rgb(210, 210, 210),rgb(194, 194, 194))',
-            paper: '#ffffff',
+            default:
+              "linear-gradient(135deg,rgb(210, 210, 210),rgb(194, 194, 194))",
+            paper: "#ffffff",
           },
           text: {
-            primary: '#212121',
-            secondary: '#757575',
+            primary: "#212121",
+            secondary: "#757575",
           },
         }
       : {
           // Dark mode palette (for Paper component only)
           primary: {
-            main: '#90caf9',
-            dark: '#42a5f5',
+            main: "#90caf9",
+            dark: "#42a5f5",
           },
           secondary: {
-            main: '#ce93d8',
+            main: "#ce93d8",
           },
           background: {
-            paper: '#121212',
+            paper: "#121212",
           },
           text: {
-            primary: '#ffffff',
-            secondary: 'rgba(255, 255, 255, 0.7)',
+            primary: "#ffffff",
+            secondary: "rgba(255, 255, 255, 0.7)",
           },
         }),
   },
@@ -82,11 +83,11 @@ const getDesignTokens = (mode) => ({
       styleOverrides: {
         root: {
           borderRadius: 8,
-          textTransform: 'none',
-          padding: '12px 24px',
-          boxShadow: 'none',
-          '&:hover': {
-            boxShadow: '0 4px 12px rgba(31, 25, 210, 0.3)',
+          textTransform: "none",
+          padding: "12px 24px",
+          boxShadow: "none",
+          "&:hover": {
+            boxShadow: "0 4px 12px rgba(31, 25, 210, 0.3)",
           },
         },
       },
@@ -94,13 +95,13 @@ const getDesignTokens = (mode) => ({
     MuiTextField: {
       styleOverrides: {
         root: {
-          '& .MuiOutlinedInput-root': {
+          "& .MuiOutlinedInput-root": {
             borderRadius: 8,
-            '& fieldset': {
-              borderColor: '#e0e0e0',
+            "& fieldset": {
+              borderColor: "#e0e0e0",
             },
-            '&:hover fieldset': {
-              borderColor: '#1976d2',
+            "&:hover fieldset": {
+              borderColor: "#1976d2",
             },
           },
         },
@@ -110,12 +111,12 @@ const getDesignTokens = (mode) => ({
       styleOverrides: {
         root: {
           borderRadius: 12,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-          },
+          boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
         },
       },
     },
-  });
+  },
+});
 
 const Login = () => {
   const [user_email, setEmail] = useState("");
@@ -124,62 +125,83 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState('light');
-  
+  const [mode, setMode] = useState("light");
+
   const theme = createTheme(getDesignTokens(mode));
   const outerTheme = useTheme();
 
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
       },
     }),
-    [],
+    []
   );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-  
+
     try {
       dispatch(loginStart());
       const option = {
         method: "POST",
-        data: {user_email, user_password},
-      }
-      const loginResponse = await makeApiRequest(apiUrls.Login, option, "application/json", dispatch, null, false);
+        data: { user_email, user_password },
+      };
+      const loginResponse = await makeApiRequest(
+        apiUrls.Login,
+        option,
+        "application/json",
+        dispatch,
+        null,
+        false
+      );
       if (
-        !loginResponse || 
-        loginResponse.error || 
+        !loginResponse ||
+        loginResponse.error ||
         !loginResponse?.data?.token
       ) {
         throw new Error(
-          loginResponse?.message || 
-          "Login failed: Invalid credentials or server error"
+          loginResponse?.message ||
+            "Login failed: Invalid credentials or server error"
         );
       }
 
       const token = loginResponse.data.token;
       const option1 = {
         method: "GET",
-      }
-      const protectedLogin = await makeApiRequest(apiUrls.ProtectedLogin, option1, "application/json", dispatch, token, false);
-      const masterRole = await makeApiRequest(apiUrls.MasterRole, option1, "application/json", dispatch, token, false);
-      
+      };
+      const protectedLogin = await makeApiRequest(
+        apiUrls.ProtectedLogin,
+        option1,
+        "application/json",
+        dispatch,
+        token,
+        false
+      );
+      const masterRole = await makeApiRequest(
+        apiUrls.MasterRole,
+        option1,
+        "application/json",
+        dispatch,
+        token,
+        false
+      );
+
       const user = {
         ...loginResponse,
         protected: protectedLogin,
         master: masterRole,
       };
-      
+
       dispatch(loginSuccess(user));
       toast.success("Login Successful");
       navigate("/");
-    } catch(err) {
+    } catch (err) {
       console.log(err);
-      dispatch(loginFailure(err.message))
+      dispatch(loginFailure(err.message));
       setError(err.message);
       toast.error(err.message);
     } finally {
@@ -192,28 +214,29 @@ const Login = () => {
       handleSubmit(e);
     }
   };
-  
+
   return (
     <>
       <ThemeProvider theme={outerTheme}>
         <Box
           sx={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #0f2027)',
-            backgroundSize: '400% 400%',
-            animation: 'gradient 15s ease infinite',
-            '@keyframes gradient': {
-              '0%': {
-                backgroundPosition: '0% 50%',
+            minHeight: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background:
+              "linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #0f2027)",
+            backgroundSize: "400% 400%",
+            animation: "gradient 15s ease infinite",
+            "@keyframes gradient": {
+              "0%": {
+                backgroundPosition: "0% 50%",
               },
-              '50%': {
-                backgroundPosition: '100% 50%',
+              "50%": {
+                backgroundPosition: "100% 50%",
               },
-              '100%': {
-                backgroundPosition: '0% 50%',
+              "100%": {
+                backgroundPosition: "0% 50%",
               },
             },
           }}
@@ -222,22 +245,23 @@ const Login = () => {
             <Paper
               elevation={6}
               sx={{
-                width: '100%',
+                width: "100%",
                 maxWidth: 450,
                 p: 4,
                 mx: 2,
-                position: 'relative',
-                overflow: 'hidden',
-                '&:before': {
+                position: "relative",
+                overflow: "hidden",
+                "&:before": {
                   content: '""',
-                  position: 'absolute',
+                  position: "absolute",
                   top: 0,
                   left: 0,
                   right: 0,
                   height: 4,
-                  background: mode === 'light' 
-                    ? 'linear-gradient(90deg, #1976d2, #0d47a1)' 
-                    : 'linear-gradient(90deg, #90caf9, #42a5f5)',
+                  background:
+                    mode === "light"
+                      ? "linear-gradient(90deg, #1976d2, #0d47a1)"
+                      : "linear-gradient(90deg, #90caf9, #42a5f5)",
                 },
               }}
               component={motion.div}
@@ -245,12 +269,12 @@ const Login = () => {
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+              <Box sx={{ position: "absolute", top: 16, right: 16 }}>
                 <IconButton onClick={colorMode.toggleColorMode} color="inherit">
-                  {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+                  {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
                 </IconButton>
               </Box>
-              
+
               <Box
                 sx={{
                   display: "flex",
@@ -263,9 +287,9 @@ const Login = () => {
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <Avatar 
-                    sx={{ 
-                      m: 1, 
+                  <Avatar
+                    sx={{
+                      m: 1,
                       bgcolor: "primary.main",
                       width: 64,
                       height: 64,
@@ -274,24 +298,24 @@ const Login = () => {
                     <LockOutlinedIcon fontSize="medium" />
                   </Avatar>
                 </motion.div>
-                <Typography 
-                  component="h1" 
+                <Typography
+                  component="h1"
                   variant="h5"
-                  sx={{ 
+                  sx={{
                     mt: 2,
                     mb: 1,
-                    color: 'text.primary',
+                    color: "text.primary",
                     fontWeight: 600,
                   }}
                 >
                   Welcome Back
                 </Typography>
-                <Typography 
+                <Typography
                   variant="body2"
-                  sx={{ 
+                  sx={{
                     mb: 3,
-                    color: 'text.secondary',
-                    textAlign: 'center',
+                    color: "text.secondary",
+                    textAlign: "center",
                   }}
                 >
                   Sign in to access your Dashboard
@@ -300,9 +324,9 @@ const Login = () => {
                   component="form"
                   noValidate
                   onSubmit={handleSubmit}
-                  sx={{ 
+                  sx={{
                     mt: 1,
-                    width: '100%',
+                    width: "100%",
                   }}
                 >
                   <TextField
@@ -319,16 +343,19 @@ const Login = () => {
                     onKeyDown={handleKeyPress}
                     sx={{
                       mb: 2,
-                      '& .MuiInputLabel-root': {
-                        color: 'text.secondary',
+                      "& .MuiInputLabel-root": {
+                        color: "text.secondary",
                       },
-                      '& .MuiOutlinedInput-root': {
-                        color: 'text.primary',
-                        '& fieldset': {
-                          borderColor: mode === 'light' ? '#e0e0e0' : 'rgba(255, 255, 255, 0.23)',
+                      "& .MuiOutlinedInput-root": {
+                        color: "text.primary",
+                        "& fieldset": {
+                          borderColor:
+                            mode === "light"
+                              ? "#e0e0e0"
+                              : "rgba(255, 255, 255, 0.23)",
                         },
-                        '&:hover fieldset': {
-                          borderColor: mode === 'light' ? '#1976d2' : '#90caf9',
+                        "&:hover fieldset": {
+                          borderColor: mode === "light" ? "#1976d2" : "#90caf9",
                         },
                       },
                     }}
@@ -347,56 +374,74 @@ const Login = () => {
                     onKeyDown={handleKeyPress}
                     sx={{
                       mb: 2,
-                      '& .MuiInputLabel-root': {
-                        color: 'text.secondary',
+                      "& .MuiInputLabel-root": {
+                        color: "text.secondary",
                       },
-                      '& .MuiOutlinedInput-root': {
-                        color: 'text.primary',
-                        '& fieldset': {
-                          borderColor: mode === 'light' ? '#e0e0e0' : 'rgba(255, 255, 255, 0.23)',
+                      "& .MuiOutlinedInput-root": {
+                        color: "text.primary",
+                        "& fieldset": {
+                          borderColor:
+                            mode === "light"
+                              ? "#e0e0e0"
+                              : "rgba(255, 255, 255, 0.23)",
                         },
-                        '&:hover fieldset': {
-                          borderColor: mode === 'light' ? '#1976d2' : '#90caf9',
+                        "&:hover fieldset": {
+                          borderColor: mode === "light" ? "#1976d2" : "#90caf9",
                         },
                       },
                     }}
                   />
                   {error && (
-                    <Typography 
-                      color="error" 
+                    <Typography
+                      color="error"
                       variant="body2"
-                      sx={{ 
+                      sx={{
                         mt: 1,
-                        textAlign: 'center',
+                        textAlign: "center",
                       }}
                     >
                       {error}
                     </Typography>
                   )}
+                  <Grid container justifyContent="flex-end" sx={{ mt: 1 }}>
+                    <Grid item>
+                      <Link
+                        href="/forgotPassword"
+                        variant="body2"
+                        sx={{ color: mode === "light" ? "#1976d2" : "#90caf9" }}
+                      >
+                        Forgot password?
+                      </Link>
+                    </Grid>
+                  </Grid>
+
                   <Button
                     type="submit"
                     fullWidth
                     variant="contained"
-                    sx={{ 
-                      mt: 3, 
+                    sx={{
+                      mt: 3,
                       mb: 2,
                       py: 1.5,
-                      fontSize: '1rem',
-                      background: mode === 'light' 
-                        ? 'linear-gradient(90deg, #1976d2, #0d47a1)' 
-                        : 'linear-gradient(90deg, #90caf9, #42a5f5)',
-                      '&:hover': {
-                        background: mode === 'light' 
-                          ? 'linear-gradient(90deg, #1565c0, #0d47a1)' 
-                          : 'linear-gradient(90deg, #42a5f5, #1e88e5)',
+                      fontSize: "1rem",
+                      background:
+                        mode === "light"
+                          ? "linear-gradient(90deg, #1976d2, #0d47a1)"
+                          : "linear-gradient(90deg, #90caf9, #42a5f5)",
+                      "&:hover": {
+                        background:
+                          mode === "light"
+                            ? "linear-gradient(90deg, #1565c0, #0d47a1)"
+                            : "linear-gradient(90deg, #42a5f5, #1e88e5)",
                       },
                     }}
                     component={motion.div}
-                    whileHover={{ 
+                    whileHover={{
                       scale: 1.02,
                     }}
                     whileTap={{ scale: 0.98 }}
                     disabled={loading}
+                    onClick={handleSubmit}
                   >
                     {loading ? (
                       <CircularProgress size={24} color="inherit" />
@@ -410,8 +455,8 @@ const Login = () => {
           </ThemeProvider>
         </Box>
       </ThemeProvider>
-      <ToastContainer 
-        position="top-right" 
+      <ToastContainer
+        position="top-right"
         autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}

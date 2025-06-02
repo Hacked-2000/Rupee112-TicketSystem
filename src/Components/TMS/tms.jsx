@@ -125,8 +125,8 @@ const TMS = () => {
   const hideCreateButtonForRoles = [1, 3];
   const shouldHideCreateButton = hideCreateButtonForRoles.includes(currentRole);
 
-  const handleOpenTicket = () => {
-    navigate("/openTicket");
+  const handleOpenTicket = (ticket_id) => {
+    navigate(`/openTicket/${ticket_id}`);
   };
   const handleCreateTicket = () => {
     navigate("/createTicket");
@@ -231,7 +231,7 @@ const TMS = () => {
                 filteredTickets.map((ticket) => (
                   <TableRow key={ticket.id}>
                     <TableCell>
-                      <Badge badgeContent={ticket.id} color="primary">
+                      <Badge badgeContent={ticket.id} color="primary" max={9999}>
                         <TicketIcon color="action" />
                       </Badge>
                     </TableCell>
@@ -275,7 +275,7 @@ const TMS = () => {
                       {new Date(ticket.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell align="center">
-                      <Button onClick={handleOpenTicket}>Open</Button>
+                      <Button onClick={()=>{handleOpenTicket(ticket?.id)}}>Open</Button>
                     </TableCell>
                   </TableRow>
                 ))}
